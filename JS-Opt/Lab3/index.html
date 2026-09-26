@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>⚔️ Laboratorio 3 — Guild Master: Gestión de Gremio RPG</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Fira+Code:wght@400;600&family=Lora:ital,wght@0,400;0,600;1,400&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <div class="vignette"></div>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- HEADER                                         -->
+  <!-- ══════════════════════════════════════════════ -->
+  <header class="header">
+    <div class="header__logo">
+      <span class="header__icon">🏰</span>
+      <div>
+        <h1 class="header__title">Guild Master</h1>
+        <p class="header__subtitle">Sistema de Gestión del Gremio</p>
+      </div>
+    </div>
+    <div class="header__stats">
+      <div class="header__stat">
+        <span class="header__stat-value" id="stat-heroes">—</span>
+        <span class="header__stat-label">Héroes</span>
+      </div>
+      <div class="header__stat">
+        <span class="header__stat-value" id="stat-poder">—</span>
+        <span class="header__stat-label">Poder Total</span>
+      </div>
+      <div class="header__stat">
+        <span class="header__stat-value" id="stat-misiones">—</span>
+        <span class="header__stat-label">Misiones</span>
+      </div>
+      <div class="header__stat">
+        <span class="header__stat-value" id="stat-recompensas">—</span>
+        <span class="header__stat-label">Recompensas</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- NAVIGATION TABS                                -->
+  <!-- ══════════════════════════════════════════════ -->
+  <nav class="tabs">
+    <button class="tab tab--active" data-tab="gremio">
+      <span class="tab__icon">⚔️</span> Salón del Gremio
+    </button>
+    <button class="tab" data-tab="misiones">
+      <span class="tab__icon">📜</span> Tablón de Misiones
+    </button>
+    <button class="tab" data-tab="estrategia">
+      <span class="tab__icon">📊</span> Sala de Estrategia
+    </button>
+  </nav>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- TAB 1: SALÓN DEL GREMIO                        -->
+  <!-- ══════════════════════════════════════════════ -->
+  <section class="panel" id="panel-gremio">
+
+    <!-- SEARCH & ACTIONS -->
+    <div class="toolbar">
+      <div class="search-box">
+        <span class="search-box__icon">🔍</span>
+        <input type="text" id="search-input" placeholder="Buscar héroe por nombre..." />
+      </div>
+      <div class="toolbar__actions">
+        <button class="btn btn--gold" id="btn-show-add">➕ Reclutar Héroe</button>
+        <button class="btn btn--secondary" id="btn-catalogo">📋 Catálogo Activo</button>
+      </div>
+    </div>
+
+    <!-- ADD HERO FORM (hidden by default) -->
+    <div class="add-form hidden" id="add-form">
+      <h3 class="add-form__title">⚔️ Reclutar Nuevo Héroe</h3>
+      <div class="add-form__grid">
+        <div class="field">
+          <label for="add-id">ID</label>
+          <input type="number" id="add-id" placeholder="Ej: 11" min="1" />
+        </div>
+        <div class="field">
+          <label for="add-nombre">Nombre</label>
+          <input type="text" id="add-nombre" placeholder="Ej: Thorin" />
+        </div>
+        <div class="field">
+          <label for="add-clase">Clase</label>
+          <select id="add-clase">
+            <option value="Guerrero">🗡️ Guerrero</option>
+            <option value="Mago">🔮 Mago</option>
+            <option value="Arquero">🏹 Arquero</option>
+            <option value="Sanador">💚 Sanador</option>
+            <option value="Pícaro">🗝️ Pícaro</option>
+            <option value="Paladín">🛡️ Paladín</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="add-poder">Poder</label>
+          <input type="number" id="add-poder" placeholder="Ej: 500" min="1" />
+        </div>
+        <div class="field">
+          <label for="add-energia">Energía</label>
+          <input type="number" id="add-energia" placeholder="Ej: 10" min="0" />
+        </div>
+        <div class="field">
+          <label for="add-nivel">Nivel</label>
+          <input type="number" id="add-nivel" placeholder="Ej: 3" min="1" max="10" />
+        </div>
+        <div class="field field--checkbox">
+          <label><input type="checkbox" id="add-activo" checked /> Activo</label>
+        </div>
+      </div>
+      <div class="add-form__buttons">
+        <button class="btn btn--gold" id="btn-add">Reclutar</button>
+        <button class="btn btn--ghost" id="btn-cancel-add">Cancelar</button>
+      </div>
+    </div>
+
+    <!-- VALIDATION BADGES -->
+    <div class="badges" id="badges">
+      <div class="badge badge--loading" id="badge-agotados">
+        <span class="badge__icon">💤</span>
+        <span class="badge__text">¿Hay héroes sin energía?</span>
+        <span class="badge__value" id="badge-agotados-val">…</span>
+      </div>
+      <div class="badge badge--loading" id="badge-poder-ok">
+        <span class="badge__icon">⚡</span>
+        <span class="badge__text">¿Todos activos con poder &gt; 50?</span>
+        <span class="badge__value" id="badge-poder-ok-val">…</span>
+      </div>
+      <div class="badge badge--loading" id="badge-guerreros">
+        <span class="badge__icon">🗡️</span>
+        <span class="badge__text">¿Guerreros con energía?</span>
+        <span class="badge__value" id="badge-guerreros-val">…</span>
+      </div>
+    </div>
+
+    <!-- HERO CARDS GRID -->
+    <div class="hero-grid" id="hero-grid">
+      <!-- Rendered by app.js -->
+    </div>
+
+    <!-- EXHAUSTED HEROES PANEL -->
+    <div class="rest-panel" id="rest-panel">
+      <h3 class="rest-panel__title">💤 Héroes que Necesitan Descanso</h3>
+      <div class="rest-panel__list" id="rest-list">
+        <p class="placeholder">Implementa <code>heroesAgotados()</code></p>
+      </div>
+    </div>
+
+    <!-- CATALOG MODAL -->
+    <div class="modal hidden" id="catalog-modal">
+      <div class="modal__content">
+        <div class="modal__header">
+          <h3>📋 Catálogo de Héroes Disponibles</h3>
+          <button class="btn btn--ghost" id="btn-close-catalog">✕</button>
+        </div>
+        <div class="modal__body" id="catalog-body">
+          <p class="placeholder">Implementa <code>obtenerHeroesDisponibles()</code> para ver el catálogo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- TAB 2: TABLÓN DE MISIONES                      -->
+  <!-- ══════════════════════════════════════════════ -->
+  <section class="panel hidden" id="panel-misiones">
+
+    <!-- MONTH FILTER -->
+    <div class="toolbar">
+      <div class="month-filter">
+        <label>Filtrar por mes:</label>
+        <select id="filter-mes">
+          <option value="0">Todas las misiones</option>
+          <option value="1">Enero 2024</option>
+          <option value="2">Febrero 2024</option>
+          <option value="3">Marzo 2024</option>
+        </select>
+      </div>
+      <div class="toolbar__actions">
+        <span class="filter-result" id="filter-result"></span>
+      </div>
+    </div>
+
+    <!-- MISSION CARDS -->
+    <div class="mission-grid" id="mission-grid">
+      <p class="placeholder">Implementa <code>enriquecerMisiones()</code> para ver los detalles de misiones.</p>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- TAB 3: SALA DE ESTRATEGIA                      -->
+  <!-- ══════════════════════════════════════════════ -->
+  <section class="panel hidden" id="panel-estrategia">
+
+    <!-- POWER BOOST TOOL -->
+    <div class="tool-card">
+      <h3 class="tool-card__title">⚡ Mejorar Poder por Clase</h3>
+      <p class="tool-card__desc">Aplica un porcentaje de mejora al poder de todos los héroes de una clase. No modifica los datos originales.</p>
+      <div class="tool-card__controls">
+        <select id="boost-clase">
+          <option value="Guerrero">🗡️ Guerrero</option>
+          <option value="Mago">🔮 Mago</option>
+          <option value="Arquero">🏹 Arquero</option>
+          <option value="Sanador">💚 Sanador</option>
+          <option value="Pícaro">🗝️ Pícaro</option>
+          <option value="Paladín">🛡️ Paladín</option>
+        </select>
+        <input type="number" id="boost-porcentaje" placeholder="% (ej: 20 ó -10)" />
+        <button class="btn btn--gold" id="btn-boost">Aplicar Mejora</button>
+      </div>
+      <div class="tool-card__result hidden" id="boost-result"></div>
+    </div>
+
+    <!-- ANALYTICS GRID -->
+    <div class="analytics-grid">
+
+      <!-- CLASS SUMMARY -->
+      <div class="analytics-card analytics-card--wide">
+        <h3 class="analytics-card__title">📊 Resumen por Clase</h3>
+        <div class="analytics-card__body" id="class-summary">
+          <p class="placeholder">Implementa <code>resumenPorClase()</code></p>
+        </div>
+      </div>
+
+      <!-- TOP HEROES -->
+      <div class="analytics-card">
+        <h3 class="analytics-card__title">🏆 Héroes Más Activos</h3>
+        <div class="analytics-card__body" id="top-heroes">
+          <p class="placeholder">Implementa <code>heroesMasActivos()</code></p>
+        </div>
+      </div>
+
+      <!-- PLAYER SUMMARY -->
+      <div class="analytics-card">
+        <h3 class="analytics-card__title">👥 Resumen por Jugador</h3>
+        <div class="analytics-card__body" id="player-summary">
+          <p class="placeholder">Implementa <code>resumenPorJugador()</code></p>
+        </div>
+      </div>
+
+      <!-- ENERGY IMPACT -->
+      <div class="analytics-card">
+        <h3 class="analytics-card__title">🔋 Impacto en Energía</h3>
+        <div class="analytics-card__body" id="energy-impact">
+          <p class="placeholder">Implementa <code>impactoEnEnergia()</code></p>
+        </div>
+      </div>
+
+      <!-- CROSS VALIDATIONS -->
+      <div class="analytics-card">
+        <h3 class="analytics-card__title">🔗 Validaciones Cruzadas</h3>
+        <div class="analytics-card__body" id="cross-validations">
+          <p class="placeholder">Implementa <code>validacionesCruzadas()</code></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- CONSOLE LOG                                    -->
+  <!-- ══════════════════════════════════════════════ -->
+  <footer class="console">
+    <div class="console__header">
+      <span>📜 Registro del Gremio</span>
+      <button class="btn btn--ghost btn--sm" id="btn-clear-log">Limpiar</button>
+    </div>
+    <div class="console__entries" id="console-entries">
+      <div class="log-entry log-entry--system">🏰 Guild Master inicializado. Completa los TODO en funciones.js para activar el sistema.</div>
+    </div>
+  </footer>
+
+  <!-- SCRIPTS -->
+  <script src="funciones.js"></script>
+  <script src="app.js"></script>
+</body>
+
+</html>
