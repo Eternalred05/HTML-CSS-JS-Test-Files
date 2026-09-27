@@ -1,0 +1,12 @@
+* {
+    /*El asterisco es para todo en el html*/
+    font-family: sans-serif;
+}
+
+body {
+    background-color: aqua;
+
+}
+h1{
+    font-style: italic;
+}
