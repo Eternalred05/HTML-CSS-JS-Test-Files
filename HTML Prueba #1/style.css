@@ -1,10 +1,15 @@
 * {
     /*El asterisco es para todo en el html*/
     font-family: sans-serif;
+    color:darkgrey;
+    text-align: center;
 }
 
+a{
+    color: blue;
+}
 body {
-    background-color: aqua;
+    background-image: url(loscoco.jpg);
 
 }
 h1{
